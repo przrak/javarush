@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<!--suppress ALL -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="parts">
+    <form class="button" action="#" data-th-action="@{/filtered}" method="POST">
+            <button th:if="${action} == all" type="submit" class="btn btn-primary active" name="action" value="all">Все детали</button>
+            <button th:unless="${action} == all" type="submit" class="btn btn-primary" name="action" value="all">Все детали</button>
+            <button th:if="${action} == needed" type="submit" class="btn btn-primary active" name="action" value="needed">Только нужные</button>
+            <button th:unless="${action} == needed" type="submit" class="btn btn-primary" name="action" value="needed">Только нужные</button>
+            <button th:if="${action} == optional" type="submit" class="btn btn-primary active" name="action" value="optional">Только ненужные</button>
+            <button th:unless="${action} == optional" type="submit" class="btn btn-primary" name="action" value="optional">Только ненужные</button>
+    </form>
+    <br/>
+    <div class="container">
+        <form class="form-horizontal" th:action="@{/search}" name="input_form" id="input_form"
+              method="POST" role="form">
+            <div class="form-group">
+                <input type="text" class="form-control" id="name" th:name="name" placeholder="Название детали" maxlength="100"/>
+            </div>
+            <button type="submit" class="btn btn-primary">Найти</button>
+        </form>
+    </div>
+    <br/>
+    <table class="table table-bordered table-hover horizontal-align" th:if="${isEmpty} == false">
+        <thead>
+        <tr>
+            <th style="width: 5%">#</th>
+            <th style="width: 60%">Наименование</th>
+            <th style="width: 5%">Необходимость</th>
+            <th style="width: 5%">Количество</th>
+            <th style="width: 5%">Редактировать</th>
+            <th style="width: 5%">Удалить</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="part : ${page.content}">
+            <td th:text="${part.id}" style="text-align: center"></td>
+            <td th:text="${part.name}"></td>
+            <td style="text-align: center">
+                <i th:if="${part.need} == true" class="fa fa-plus-square-o" style="font-size:20px;color:#337ab7"></i>
+                <i th:if="${part.need} == false" class="fa fa-minus-square-o" style="font-size:20px;color:#337ab7"></i>
+            </td>
+            <td th:text="${part.quantity}" style="text-align: center"></td>
+            <td style="text-align: center"><a th:href="@{'/edit/{id}'(id=${part.id})}"><i class="fa fa-edit"
+                                                                                          style="font-size:20px"></i></a>
+            </td>
+            <td style="text-align: center"><a th:href="@{'/delete/{id}'(id=${part.id})}"><i class="fa fa-trash"
+                                                                                            style="font-size:20px"></i></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table class="table table-bordered table-hover horizontal-align" th:if="${isEmpty} == true">
+        <thead>
+        <tr>
+            <th style="width: 100%">Список деталей пуст</th>
+        </tr>
+        </thead>
+    </table>
+
+    <div th:if="${showComputerBlock} == true">
+        <table class="table table-bordered table-hover horizontal-align">
+            <tbody>
+            <tr>
+                <td style="text-align: center; width: 33%">Можно собрать</td>
+                <td th:text="${numberOfComputers}" style="text-align: center; width: 33%"></td>
+                <td style="text-align: center; width: 33%">компьютеров</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="pagination-div">
+        <div th:if="${page.getTotalElements()} > 0">
+            <span th:if="${page.hasPrevious()}">
+                <a th:href="@{/(page=${page.number - 1}, size=${page.size})}">Previous</a>
+            </span>
+            <th:block th:each="i: ${#numbers.sequence(0, page.totalPages - 1)}">
+                <span th:if="${page.number == i}" class="selected">[[${i}+1]]</span>
+                <span th:unless="${page.number == i}">
+                <a th:href="@{/(page=${i},size=${page.size})}">[[${i}+1]]</a>
+            </span>
+            </th:block>
+            <span th:if="${page.hasNext()}">
+                <a th:href="@{/(page=${page.number + 1},size=${page.size})}">Next</a>
+            </span>
+        </div>
+    </div>
+</div>
+</html>
